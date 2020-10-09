@@ -11,8 +11,6 @@
 		842EB53E25288351004A030F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842EB53D25288351004A030F /* ContentView.swift */; };
 		842EB54025288364004A030F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 842EB53F25288364004A030F /* Assets.xcassets */; };
 		842EB54325288364004A030F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 842EB54225288364004A030F /* Preview Assets.xcassets */; };
-		842EB54E25288365004A030F /* MyFirstAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842EB54D25288365004A030F /* MyFirstAppTests.swift */; };
-		842EB55925288365004A030F /* MyFirstAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842EB55825288365004A030F /* MyFirstAppUITests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,11 +38,7 @@
 		842EB54225288364004A030F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		842EB54425288364004A030F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		842EB54925288365004A030F /* MyFirstAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyFirstAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		842EB54D25288365004A030F /* MyFirstAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFirstAppTests.swift; sourceTree = "<group>"; };
-		842EB54F25288365004A030F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		842EB55425288365004A030F /* MyFirstAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyFirstAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		842EB55825288365004A030F /* MyFirstAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFirstAppUITests.swift; sourceTree = "<group>"; };
-		842EB55A25288365004A030F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,8 +70,6 @@
 			isa = PBXGroup;
 			children = (
 				842EB53A25288351004A030F /* MyFirstApp */,
-				842EB54C25288365004A030F /* MyFirstAppTests */,
-				842EB55725288365004A030F /* MyFirstAppUITests */,
 				842EB53925288351004A030F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -110,24 +102,6 @@
 				842EB54225288364004A030F /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
-			sourceTree = "<group>";
-		};
-		842EB54C25288365004A030F /* MyFirstAppTests */ = {
-			isa = PBXGroup;
-			children = (
-				842EB54D25288365004A030F /* MyFirstAppTests.swift */,
-				842EB54F25288365004A030F /* Info.plist */,
-			);
-			path = MyFirstAppTests;
-			sourceTree = "<group>";
-		};
-		842EB55725288365004A030F /* MyFirstAppUITests */ = {
-			isa = PBXGroup;
-			children = (
-				842EB55825288365004A030F /* MyFirstAppUITests.swift */,
-				842EB55A25288365004A030F /* Info.plist */,
-			);
-			path = MyFirstAppUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -268,7 +242,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				842EB54E25288365004A030F /* MyFirstAppTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -276,7 +249,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				842EB55925288365004A030F /* MyFirstAppUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
