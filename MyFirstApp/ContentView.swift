@@ -8,43 +8,61 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var showingAlert = false
+    
+    @State private var showingAlert:Bool = false
+    var icoPadding:CGFloat = 1.0
     
     var body: some View {
         
         VStack {
             
-            Image(systemName: "homekit")
-            Text("Hello, Mark!")
-                .padding(5)
             
-            Text("It's Emaulator in Emulator,\n but it works well too :)")
-                .foregroundColor(.red)
-                .padding()
-            
-            Button(action: {
-                self.showingAlert = true
-            }) {
-                HStack{
-                    Image(systemName: "exclamationmark.icloud")
-                    Text("Click me, please!")
+            VStack {
+                HStack {
+                    Image(systemName: "number.square").padding(icoPadding)
+                    Image(systemName: "number.square").padding(icoPadding)
                 }
-                .foregroundColor(.white)
-                .padding(10)
+                HStack {
+                    Image(systemName: "number.square").padding(icoPadding)
+                    Image(systemName: "number.square.fill").padding(icoPadding)
+                }
             }
-            .background(Color.blue)
-            .clipShape(RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/))
-            .shadow(radius: 15 )
-            .overlay(
-                RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
-                    .stroke(Color.white, lineWidth: 3)
-            )
             
-            Text("And as you can see, \nI can do some basic things with the UI")
-                .multilineTextAlignment(.center)
-                .padding()
-                .font(.footnote)
-                .foregroundColor(.blue)
+            Text("Gem Puzzle")
+                .font(.headline)
+                
+            Text("a.k.a. Game of Fifteen")
+                .foregroundColor(.gray)
+            
+            VStack {
+                Button(action: {
+                    self.showingAlert = true
+                }) {
+                    HStack{
+                        Text("Let's start!")
+                        Image(systemName: "play")
+                    }
+                    .foregroundColor(.white)
+                    .padding(10)
+                }
+                .background(Color.blue)
+                .clipShape(RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/))
+                
+                Button(action: {
+                    self.showingAlert = true
+                }) {
+                    HStack{
+                        Text("Exit now")
+                        Image(systemName: "xmark")
+                    }
+                    .foregroundColor(.white)
+                    .padding(10)
+                }
+                .background(Color.red)
+                .clipShape(RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/))
+                
+            }.padding()
+            
         }
         
         .alert(isPresented: $showingAlert) {
