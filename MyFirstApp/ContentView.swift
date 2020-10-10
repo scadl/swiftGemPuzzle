@@ -11,11 +11,14 @@ struct ContentView: View {
     
     @State private var showingAlert:Bool = false
     var icoPadding:CGFloat = 1.0
+    var btnHeigh:CGFloat = 200.0
+    var btnRadius:CGFloat = 15.0
+    var uiPadding:CGFloat = 5.0
     
     var body: some View {
         
+        NavigationView{
         VStack {
-            
             
             VStack {
                 HStack {
@@ -35,34 +38,42 @@ struct ContentView: View {
                 .foregroundColor(.gray)
             
             VStack {
-                Button(action: {
-                    self.showingAlert = true
-                }) {
-                    HStack{
-                        Text("Let's start!")
-                        Image(systemName: "play")
-                    }
-                    .foregroundColor(.white)
-                    .padding(10)
-                }
-                .background(Color.blue)
-                .clipShape(RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/))
+                
+                    NavigationLink(
+                        destination: MainBoardView(),
+                        label: {
+                            HStack {
+                                Image(systemName: "play")
+                                Text("Let's start")
+                            }
+                            .foregroundColor(.white)
+                                .padding(uiPadding)
+                                .frame(width: btnHeigh, height: 40, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
+                                .background(Color.blue)
+                                .clipShape(RoundedRectangle(cornerRadius: btnRadius))
+                        }
+                    )
+                
+                
                 
                 Button(action: {
                     self.showingAlert = true
+                    exit(0)
                 }) {
                     HStack{
-                        Text("Exit now")
                         Image(systemName: "xmark")
+                        Text("Exit now")
                     }
                     .foregroundColor(.white)
-                    .padding(10)
+                    .padding(uiPadding)
+                    .frame(width: btnHeigh, height: 35, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
                 }
                 .background(Color.red)
-                .clipShape(RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/))
+                .clipShape(RoundedRectangle(cornerRadius: btnRadius))
                 
             }.padding()
             
+        }
         }
         
         .alert(isPresented: $showingAlert) {
@@ -73,7 +84,9 @@ struct ContentView: View {
             )
 
         }
+        
     }
+    
 }
 
 struct ContentView_Previews: PreviewProvider {
