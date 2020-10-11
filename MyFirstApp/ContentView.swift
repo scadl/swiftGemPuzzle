@@ -34,7 +34,7 @@ struct ContentView: View {
             Text("Gem Puzzle")
                 .font(.headline)
                 
-            Text("a.k.a. Game of Fifteen")
+            Text("Game of Fifteen")
                 .foregroundColor(.gray)
             
             VStack {

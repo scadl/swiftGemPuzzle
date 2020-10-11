@@ -10,13 +10,16 @@ import SwiftUI
 struct BoardCellView: View {
     
     var cellText:String
-    var cellColor:Color
     var cellSize:CGFloat
+    @State var cellColor:Color
+    
+    let onTo:()->Void
     
     var body: some View {
         HStack{
-            Text(cellText)
-                .font(.title)
+            Button(cellText, action: {
+                actColor()
+            }).font(.title)
                 .frame(width: cellSize, height: cellSize, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
                 .background(cellColor)
                 .foregroundColor(.white)
@@ -25,10 +28,20 @@ struct BoardCellView: View {
         }
         
     }
+    
+    func actColor(){
+        if(cellColor==Color.blue){
+            cellColor = Color.purple
+        } else {
+            cellColor = Color.blue
+        }
+        onTo()
+        //print(cellText)
+    }
 }
 
 struct BoardCellView_Previews: PreviewProvider {
     static var previews: some View {
-        BoardCellView(cellText: "#", cellColor: Color.blue, cellSize: 70)
+        BoardCellView(cellText: "#", cellSize: 70, cellColor: Color.blue, onTo: {})
     }
 }

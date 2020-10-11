@@ -25,9 +25,21 @@ struct MainBoardView: View {
                     ForEach(counter, id:\.self){ num in
                         let num = getRandAndRemove()
                         if (num=="0"){
-                            BoardCellView(cellText: "", cellColor: Color.gray, cellSize: cellSize)
+                            BoardCellView(
+                                cellText: "",
+                                cellSize: cellSize,
+                                cellColor: Color.gray,
+                                onTo: {
+                                    print("zero"+num)
+                                })
                         } else {
-                            BoardCellView(cellText: num, cellColor: Color.blue, cellSize: cellSize)
+                            BoardCellView(
+                                cellText: num,
+                                cellSize: cellSize,
+                                cellColor: Color.blue,
+                                onTo: {
+                                    print("number"+num)
+                                })
                         }
                     }
                 }.padding(2)
@@ -46,6 +58,10 @@ struct MainBoardView: View {
         nums.append(String(cur))
         
         return String(cur)
+    }
+    
+    func cellClick(){
+        
     }
 }
 
