@@ -7,37 +7,45 @@
 
 import SwiftUI
 
+var turn:Int = 0
+var nums:[String] = []
+
 struct MainBoardView: View {
+    
+    var counter:[Int] = [1,2,3,4]
+    let cellSize:CGFloat = 70.0
+    
     var body: some View {
+
         VStack{
-        HStack {
-            BoardCellView(cellText: "")
-            BoardCellView(cellText: "1")
-            BoardCellView(cellText: "2")
-            BoardCellView(cellText: "3")
-        }.padding(3)
-        HStack {
+            Text("Turn: "+String(turn))
             
-            BoardCellView(cellText: "4")
-            BoardCellView(cellText: "5")
-            BoardCellView(cellText: "6")
-            BoardCellView(cellText: "7")
-        }.padding(3)
-        HStack {
-            
-            BoardCellView(cellText: "8")
-            BoardCellView(cellText: "9")
-            BoardCellView(cellText: "10")
-            BoardCellView(cellText: "11")
-        }.padding(3)
-            HStack {
-                
-                BoardCellView(cellText: "12")
-                BoardCellView(cellText: "13")
-                BoardCellView(cellText: "14")
-                BoardCellView(cellText: "15")
-            }.padding(3)
+            ForEach(counter, id:\.self){ num in
+                HStack {
+                    ForEach(counter, id:\.self){ num in
+                        let num = getRandAndRemove()
+                        if (num=="0"){
+                            BoardCellView(cellText: "", cellColor: Color.gray, cellSize: cellSize)
+                        } else {
+                            BoardCellView(cellText: num, cellColor: Color.blue, cellSize: cellSize)
+                        }
+                    }
+                }.padding(2)
+            }
+        
         }
+        
+    }
+    
+    func getRandAndRemove()->String{
+        
+        var cur = 0
+        while((nums.firstIndex(of: String(cur))) != nil){
+            cur = Int.random(in: 1...counter.count*counter.count-1)
+        }
+        nums.append(String(cur))
+        
+        return String(cur)
     }
 }
 
