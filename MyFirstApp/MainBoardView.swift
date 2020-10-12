@@ -9,6 +9,7 @@ import SwiftUI
 
 var turn:Int = 0
 var nums:[String] = []
+var lastNum:String = ""
 
 struct MainBoardView: View {
     
@@ -23,37 +24,45 @@ struct MainBoardView: View {
             ForEach(counter, id:\.self){ num in
                 HStack {
                     ForEach(counter, id:\.self){ num in
-                        let num = getRandAndRemove()
-                        if (num=="0"){
-                            BoardCellView(
-                                cellText: "",
-                                cellSize: cellSize,
-                                cellColor: Color.gray,
-                                onTo: {
-                                    print("zero"+num)
-                                })
-                        } else {
-                            BoardCellView(
-                                cellText: num,
-                                cellSize: cellSize,
-                                cellColor: Color.blue,
-                                onTo: {
-                                    print("number"+num)
-                                })
-                        }
+                        
+                        var num = getRandUniq()
+                        var visNumber = num=="0" ? " " : num
+                        var curColor:Color = num=="0" ? Color.gray : Color.blue
+                        
+                        Button(visNumber, action: {
+                            if(curColor==Color.blue){
+                                curColor = Color.purple
+                            } else if (curColor==Color.purple){
+                                curColor = Color.blue
+                            }
+                            print("num "+num)
+                            if(lastNum==""){
+                                lastNum = num
+                            } else {
+                                visNumber = lastNum
+                                lastNum = ""
+                            }
+                            print("lastnum "+lastNum)
+                       }).font(.title)
+                            .frame(width: cellSize, height: cellSize, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
+                            .background(curColor)
+                            .foregroundColor(.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .overlay(RoundedRectangle(cornerRadius: 10).stroke())
+                        
                     }
-                }.padding(2)
+                }.padding(1)
             }
         
         }
         
     }
     
-    func getRandAndRemove()->String{
+    func getRandUniq()->String{
         
         var cur = 0
         while((nums.firstIndex(of: String(cur))) != nil){
-            cur = Int.random(in: 1...counter.count*counter.count-1)
+            cur = Int.random(in: 1...Int(pow(Double(counter.count),2))-1)
         }
         nums.append(String(cur))
         
