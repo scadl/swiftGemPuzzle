@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		840C500925309D180099516F /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 840C500825309D180099516F /* README.md */; };
 		842EB53C25288351004A030F /* MyFirstAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842EB53B25288351004A030F /* MyFirstAppApp.swift */; };
-		842EB53E25288351004A030F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842EB53D25288351004A030F /* ContentView.swift */; };
+		842EB53E25288351004A030F /* MainMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842EB53D25288351004A030F /* MainMenuView.swift */; };
 		842EB54025288364004A030F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 842EB53F25288364004A030F /* Assets.xcassets */; };
 		842EB54325288364004A030F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 842EB54225288364004A030F /* Preview Assets.xcassets */; };
 		848D75662531CD11005FDB04 /* MainBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848D75652531CD11005FDB04 /* MainBoardView.swift */; };
@@ -37,7 +37,7 @@
 		840C500825309D180099516F /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		842EB53825288351004A030F /* MyFirstApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyFirstApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		842EB53B25288351004A030F /* MyFirstAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFirstAppApp.swift; sourceTree = "<group>"; };
-		842EB53D25288351004A030F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		842EB53D25288351004A030F /* MainMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuView.swift; sourceTree = "<group>"; };
 		842EB53F25288364004A030F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		842EB54225288364004A030F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		842EB54425288364004A030F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -95,7 +95,7 @@
 			isa = PBXGroup;
 			children = (
 				842EB53B25288351004A030F /* MyFirstAppApp.swift */,
-				842EB53D25288351004A030F /* ContentView.swift */,
+				842EB53D25288351004A030F /* MainMenuView.swift */,
 				848D75652531CD11005FDB04 /* MainBoardView.swift */,
 				848D756A2531D704005FDB04 /* BoardCellView.swift */,
 				842EB53F25288364004A030F /* Assets.xcassets */,
@@ -245,7 +245,7 @@
 			files = (
 				848D75662531CD11005FDB04 /* MainBoardView.swift in Sources */,
 				848D756B2531D704005FDB04 /* BoardCellView.swift in Sources */,
-				842EB53E25288351004A030F /* ContentView.swift in Sources */,
+				842EB53E25288351004A030F /* MainMenuView.swift in Sources */,
 				842EB53C25288351004A030F /* MyFirstAppApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

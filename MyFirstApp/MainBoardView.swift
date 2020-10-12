@@ -23,24 +23,18 @@ struct MainBoardView: View {
             ForEach(counter, id:\.self){ num in
                 HStack {
                     ForEach(counter, id:\.self){ num in
-                        let num = getRandAndRemove()
-                        if (num=="0"){
-                            BoardCellView(
-                                cellText: "",
+                        let numR = getRandAndRemove()
+                        let curColor = numR=="0" ? Color.gray : Color.blue
+                        let curNum = numR=="0" ? " " : numR
+                        
+                        BoardCellView(
+                                cellText: curNum,
                                 cellSize: cellSize,
-                                cellColor: Color.gray,
+                                cellColor: curColor,
                                 onTo: {
-                                    print("zero"+num)
-                                })
-                        } else {
-                            BoardCellView(
-                                cellText: num,
-                                cellSize: cellSize,
-                                cellColor: Color.blue,
-                                onTo: {
-                                    print("number"+num)
-                                })
-                        }
+                                    print("num "+numR)
+                                }
+                        )
                     }
                 }.padding(2)
             }

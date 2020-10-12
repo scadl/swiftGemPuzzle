@@ -32,7 +32,7 @@ struct BoardCellView: View {
     func actColor(){
         if(cellColor==Color.blue){
             cellColor = Color.purple
-        } else {
+        } else if(cellColor==Color.purple) {
             cellColor = Color.blue
         }
         onTo()

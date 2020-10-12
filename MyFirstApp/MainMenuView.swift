@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct MainMenuView: View {
     
     @State private var showingAlert:Bool = false
     var icoPadding:CGFloat = 1.0
@@ -91,6 +91,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        MainMenuView()
     }
 }
