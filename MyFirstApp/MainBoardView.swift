@@ -7,34 +7,48 @@
 
 import SwiftUI
 
-var turn:Int = 0
-var nums:[String] = []
+var turn:Int = 0            // Player turns count
+var nums:[String] = []      // Storage of used number
+var cellNumb = [[String]]()
 
 struct MainBoardView: View {
     
-    var counter:[Int] = [1,2,3,4]
-    let cellSize:CGFloat = 70.0
+    var counter:[Int] = [1,2,3,4]           // Game board cells count
+    let cellSize:CGFloat = 70.0             // Game baord cells size
+    //@State var cellNumb = [[String]]()      // Dictioanry of cells values
     
     var body: some View {
 
         VStack{
             Text("Turn: "+String(turn))
             
-            ForEach(counter, id:\.self){ num in
+            // Row building cycle
+            ForEach(counter, id:\.self){ numRow in
+                
+                let _ = print("r:"+String(numRow))
+                makeRow(row: numRow)
+                
                 HStack {
-                    ForEach(counter, id:\.self){ num in
-                        let numR = getRandAndRemove()
-                        let curColor = numR=="0" ? Color.gray : Color.blue
-                        let curNum = numR=="0" ? " " : numR
+                    // Column building cycle
+                    ForEach(counter, id:\.self){ numCol in
                         
+                        let _ = print("c:"+String(numCol))
+                        
+                        let rVal = getRandAndRemove(row: numRow, col: numCol)
+                        
+                        let cVal = rVal
+                        let curColor = cVal=="0" ? Color.gray : Color.blue
+                        let curNum = cVal=="0" ? " " : cVal
                         BoardCellView(
                                 cellText: curNum,
                                 cellSize: cellSize,
                                 cellColor: curColor,
                                 onTo: {
-                                    print("num "+numR)
+                                    print("click ")
                                 }
                         )
+                        
+                        let _ = print(cellNumb)
                     }
                 }.padding(2)
             }
@@ -43,15 +57,28 @@ struct MainBoardView: View {
         
     }
     
-    func getRandAndRemove()->String{
+    // A function for generating non-repeating random numbers
+    func getRandAndRemove(row:Int,col:Int)->String{
         
         var cur = 0
+                            
+        
         while((nums.firstIndex(of: String(cur))) != nil){
-            cur = Int.random(in: 1...counter.count*counter.count-1)
+            cur = Int.random(in: 1...Int(pow(Double(counter.count),2))-1)
         }
         nums.append(String(cur))
         
+        
+        //if(cellNumb[row][col]==nil) {
+        cellNumb[row-1].append(String(cur))
+        //}
+
         return String(cur)
+    }
+    
+    func makeRow(row:Int)->some View{
+        cellNumb.append([])
+        return EmptyView()
     }
     
     func cellClick(){
