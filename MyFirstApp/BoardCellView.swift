@@ -16,6 +16,7 @@ struct BoardCellView: View {
     let onTo:()->Void
     
     var body: some View {
+        //checkZero()
         HStack{
             Button(cellText, action: {
                 actColor()
@@ -29,11 +30,16 @@ struct BoardCellView: View {
         
     }
     
+    func checkZero()->some View{
+        cellColor = cellText=="0" ? Color.gray : Color.blue
+        return EmptyView()
+    }
+    
     func actColor(){
         if(cellColor==Color.blue){
-            cellColor = Color.purple
+            //cellColor = Color.purple
         } else if(cellColor==Color.purple) {
-            cellColor = Color.blue
+            //cellColor = Color.blue
         }
         onTo()
         //print(cellText)

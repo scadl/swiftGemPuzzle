@@ -9,9 +9,11 @@ import SwiftUI
 
 var turn:Int = 0                // Player turns count
 var nums:[String] = []          // Storage of used number
-var counter:[Int] = [1,2,3,4]           // Game board cells count
+var counter:[Int] = [0,1,2,3]           // Game board cells count and index
 let cellSize:CGFloat = 70.0             // Game baord cells size
-var shouldUpdate = true
+var lastNum = ""                        // Last clicked board cells value
+var lastCoord = [Int](repeating: 0, count: 2)
+//var shouldUpd = true
 
 // A matrix for stroring intal values for board
 var cellNumbI = [[String]](
@@ -26,6 +28,7 @@ struct MainBoardView: View {
         repeating: [String](repeating: "#", count: counter.count),
         count: counter.count
     )
+    @State var shouldUpd = true
     
     var body: some View {
 
@@ -43,20 +46,32 @@ struct MainBoardView: View {
                         
                         let _ = print("c:"+String(numCol))
                         
+                        // Generate and store new random number
+                        if(shouldUpd){
                         getRandAndRemove(row: numRow, col: numCol)
+                        }
                         
-                        let cVal = cellNumb[numRow-1][numCol-1]
-                        let curColor = cVal=="0" ? Color.gray : Color.blue
-                        let curNum = cVal=="0" ? " " : cVal
                         BoardCellView(
-                                cellText: curNum,
+                                cellText: cellNumb[numRow][numCol]=="0" ? " " : cellNumb[numRow][numCol],
                                 cellSize: cellSize,
-                                cellColor: curColor,
+                                cellColor: cellNumb[numRow][numCol]=="0" ? Color.gray : Color.blue,
                                 onTo: {
-                                    print("click "+cVal)
+                                    print("click "+cellNumb[numRow][numCol])
+                                    if (lastNum==""){
+                                        lastNum = cellNumb[numRow][numCol]
+                                        lastCoord = [numRow, numCol]
+                                    } else {
+                                        if(cellNumb[numRow][numCol]=="0"){
+                                            cellClickUpd(
+                                                newVal: lastNum, oldCoord: lastCoord,
+                                                row: numRow, col: numCol)
+                                        } else {
+                                            let _ = print("wrong move")
+                                            lastNum = ""
+                                        }
+                                    }
                                 }
                         )
-                        
                         
                         
                     }
@@ -64,7 +79,7 @@ struct MainBoardView: View {
                   
             }
             
-            if !(cellNumbI==cellNumb){
+            if (shouldUpd){
                 storeBoardValues()
             }
             let _ = print(cellNumbI)
@@ -85,14 +100,17 @@ struct MainBoardView: View {
         }
         nums.append(String(cur))
         
-        cellNumbI[row-1][col-1] = String(cur)
+        cellNumbI[row][col] = String(cur)
         
         return EmptyView()
     }
     
     
-    func cellClick(){
-        
+    func cellClickUpd(newVal:String,oldCoord:[Int],row:Int,col:Int){
+        cellNumb[row][col] = newVal
+        cellNumb[oldCoord[0]][oldCoord[1]] = "0"
+        lastNum = ""
+        //nums.removeAll()
     }
     
     func storeBoardValues()->some View{
@@ -100,9 +118,9 @@ struct MainBoardView: View {
         DispatchQueue.main.async {
             nums.removeAll()
             cellNumb = cellNumbI
+            shouldUpd = false
         }
         
-        shouldUpdate = false
         return EmptyView()
     }
 }
