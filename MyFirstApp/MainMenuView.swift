@@ -10,7 +10,7 @@ import SwiftUI
 struct MainMenuView: View {
     
     @State private var showingAlert:Bool = false
-    var icoPadding:CGFloat = 1.0
+    var icoPadding:CGFloat = 0.1
     var btnHeigh:CGFloat = 200.0
     var btnRadius:CGFloat = 15.0
     var uiPadding:CGFloat = 5.0
