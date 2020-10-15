@@ -11,12 +11,13 @@ struct BoardCellView: View {
     
     var cellText:String
     var cellSize:CGFloat
-    @State var cellColor:Color
+    @State var cellColor:Color     // cell color value
+    @State var shouldUpd = true                 // UI AutoUpdate flag
     
     let onTo:()->Void
     
     var body: some View {
-        //checkZero()
+        
         HStack{
             Button(cellText, action: {
                 actColor()
@@ -28,18 +29,29 @@ struct BoardCellView: View {
                 .overlay(RoundedRectangle(cornerRadius: 10).stroke())
         }
         
+        if(shouldUpd){
+            //checkZero()
+        }
+        
     }
     
     func checkZero()->some View{
-        cellColor = cellText=="0" ? Color.gray : Color.blue
+        DispatchQueue.main.async {
+            cellColor = cellText==" " ? Color.gray : Color.blue
+            shouldUpd = false
+        }        
         return EmptyView()
     }
     
     func actColor(){
         if(cellColor==Color.blue){
-            //cellColor = Color.purple
+            if (cellText == " "){
+                cellColor = Color.blue
+            } else {
+                cellColor = Color.purple
+            }
         } else if(cellColor==Color.purple) {
-            //cellColor = Color.blue
+            cellColor = Color.blue
         }
         onTo()
         //print(cellText)

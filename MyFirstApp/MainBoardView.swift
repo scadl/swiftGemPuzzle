@@ -12,8 +12,7 @@ var nums:[String] = []          // Storage of used number
 var counter:[Int] = [0,1,2,3]           // Game board cells count and index
 let cellSize:CGFloat = 70.0             // Game baord cells size
 var lastNum = ""                        // Last clicked board cells value
-var lastCoord = [Int](repeating: 0, count: 2)
-//var shouldUpd = true
+var lastCoord = [Int](repeating: 0, count: 2)   // Coords of last clicked tile
 
 // A matrix for stroring intal values for board
 var cellNumbI = [[String]](
@@ -28,7 +27,9 @@ struct MainBoardView: View {
         repeating: [String](repeating: "#", count: counter.count),
         count: counter.count
     )
-    @State var shouldUpd = true
+    @State var shouldUpd = true         // UI AutoUpdate flag
+    @State var showAlert = false        // show alert flag
+    @State var alertText = [String](repeating: "", count: 3)
     
     var body: some View {
 
@@ -38,36 +39,49 @@ struct MainBoardView: View {
             // Row building cycle
             ForEach(counter, id:\.self){ numRow in
                 
-                let _ = print("r:"+String(numRow))
-                
                 HStack {
                     // Column building cycle
                     ForEach(counter, id:\.self){ numCol in
                         
-                        let _ = print("c:"+String(numCol))
-                        
                         // Generate and store new random number
                         if(shouldUpd){
-                        getRandAndRemove(row: numRow, col: numCol)
+                            getRandAndRemove(row: numRow, col: numCol)
                         }
                         
                         BoardCellView(
                                 cellText: cellNumb[numRow][numCol]=="0" ? " " : cellNumb[numRow][numCol],
                                 cellSize: cellSize,
-                                cellColor: cellNumb[numRow][numCol]=="0" ? Color.gray : Color.blue,
+                            cellColor: cellNumb[numRow][numCol]=="0" ? Color.purple : Color.blue,
                                 onTo: {
-                                    print("click "+cellNumb[numRow][numCol])
+                                    // click event callback
                                     if (lastNum==""){
+                                        // Remember value of first click
                                         lastNum = cellNumb[numRow][numCol]
                                         lastCoord = [numRow, numCol]
                                     } else {
-                                        if(cellNumb[numRow][numCol]=="0"){
+                                        if(
+                                            cellNumb[numRow][numCol]=="0" &&
+                                            (
+                                                (lastCoord[0]==numRow-1 && lastCoord[1]==numCol) ||
+                                                (lastCoord[0]==numRow+1 && lastCoord[1]==numCol) ||
+                                                (lastCoord[0]==numRow && lastCoord[1]==numCol-1) ||
+                                                (lastCoord[0]==numRow && lastCoord[1]==numCol+1)
+                                            )
+                                        ){
+                                            // Write value of first clik to second
                                             cellClickUpd(
                                                 newVal: lastNum, oldCoord: lastCoord,
                                                 row: numRow, col: numCol)
                                         } else {
-                                            let _ = print("wrong move")
+                                            // This tiles are not exchangable - reset last click
                                             lastNum = ""
+                                            alertText=[
+                                                "Error!",
+                                                "This is a wrong move",
+                                                "OK"
+                                            ]
+                                            showAlert = true
+                                            print("worng move")
                                         }
                                     }
                                 }
@@ -79,6 +93,7 @@ struct MainBoardView: View {
                   
             }
             
+            // Allow to update the board
             if (shouldUpd){
                 storeBoardValues()
             }
@@ -86,7 +101,14 @@ struct MainBoardView: View {
             let _ = print(cellNumb)
             
         }
-       
+        
+        .alert(isPresented: $showAlert, content: {
+            Alert(
+                title: Text(alertText[0]),
+                message: Text(alertText[1]),
+                dismissButton: .default(Text(alertText[2]))
+            )
+        })
         
     }
     
@@ -105,14 +127,31 @@ struct MainBoardView: View {
         return EmptyView()
     }
     
-    
+    // Process visual cahnges of current turn
     func cellClickUpd(newVal:String,oldCoord:[Int],row:Int,col:Int){
         cellNumb[row][col] = newVal
         cellNumb[oldCoord[0]][oldCoord[1]] = "0"
+        turn += 1
         lastNum = ""
-        //nums.removeAll()
+        
+        let winArray:[[String]] = [
+            ["0","1","2","3"],
+            ["4","5","6","7"],
+            ["8","9","10","11"],
+            ["12","13","14","15"]
+        ]
+        if(cellNumb==winArray){
+            alertText=[
+                "Congratulations!",
+                "You have successfully found winning combination!",
+                "Thanks!"
+            ]
+            showAlert = true
+            // Navigate back?
+        }
     }
     
+    // Fill game board with generated data
     func storeBoardValues()->some View{
         
         DispatchQueue.main.async {
