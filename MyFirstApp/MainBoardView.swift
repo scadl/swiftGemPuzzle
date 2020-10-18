@@ -55,7 +55,7 @@ struct MainBoardView: View {
                         BoardCellView(
                                 cellText: cellNumb[numRow][numCol]=="0" ? " " : cellNumb[numRow][numCol],
                                 cellSize: cellSize,
-                            cellColor: cellHihlighted[numRow][numCol] ? Color.purple : Color.blue,
+                            cellColor: cellHihlighted[numRow][numCol]||cellNumb[numRow][numCol]=="0" ? Color.purple : Color.blue,
                                 onTo: {
                                     // click event callback
                                     if (lastNum==""){
@@ -77,7 +77,7 @@ struct MainBoardView: View {
                                             cellClickUpd(
                                                 newVal: lastNum, oldCoord: lastCoord,
                                                 row: numRow, col: numCol)
-                                            cellHihlighted[numRow][numCol] = true
+                                            cellHihlighted[lastCoord[0]][lastCoord[1]] = false
                                         } else {
                                             // This tiles are not exchangable - reset last click
                                             lastNum = ""
@@ -87,6 +87,7 @@ struct MainBoardView: View {
                                                 "OK"
                                             ]
                                             showAlert = true
+                                            cellHihlighted[numRow][numCol] = false
                                             cellHihlighted[lastCoord[0]][lastCoord[1]] = false
                                             print("worng move")
                                         }

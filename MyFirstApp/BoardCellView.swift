@@ -9,10 +9,10 @@ import SwiftUI
 
 struct BoardCellView: View {
     
-    var cellText:String
-    var cellSize:CGFloat
-    @State var cellColor:Color     // cell color value
-    @State var shouldUpd = true                 // UI AutoUpdate flag
+    var cellText:String                 // Cell label
+    var cellSize:CGFloat                // Cell size
+    var cellColor:Color                 // cell color value
+    @State var shouldUpd = true         // UI AutoUpdate flag
     
     let onTo:()->Void
     
