@@ -2,7 +2,7 @@
 //  MainBoardView.swift
 //  MyFirstApp
 //
-//  Created by Admin on 10.10.2020.
+//  Created by scadl on 10.10.2020.
 //
 
 import SwiftUI
@@ -27,9 +27,13 @@ struct MainBoardView: View {
         repeating: [String](repeating: "#", count: counter.count),
         count: counter.count
     )
-    @State var shouldUpd = true         // UI AutoUpdate flag
-    @State var showAlert = false        // show alert flag
-    @State var alertText = [String](repeating: "", count: 3)
+    @State var shouldUpd = true                                 // UI AutoUpdate flag
+    @State var showAlert = false                                // show alert flag
+    @State var alertText = [String](repeating: "", count: 3)    //A storage for poupup text
+    @State var cellHihlighted = [[Bool]](
+        repeating:[Bool](repeating: false, count: counter.count),
+        count: counter.count
+    )
     
     var body: some View {
 
@@ -51,13 +55,14 @@ struct MainBoardView: View {
                         BoardCellView(
                                 cellText: cellNumb[numRow][numCol]=="0" ? " " : cellNumb[numRow][numCol],
                                 cellSize: cellSize,
-                            cellColor: cellNumb[numRow][numCol]=="0" ? Color.purple : Color.blue,
+                            cellColor: cellHihlighted[numRow][numCol] ? Color.purple : Color.blue,
                                 onTo: {
                                     // click event callback
                                     if (lastNum==""){
                                         // Remember value of first click
                                         lastNum = cellNumb[numRow][numCol]
                                         lastCoord = [numRow, numCol]
+                                        cellHihlighted[numRow][numCol] = true
                                     } else {
                                         if(
                                             cellNumb[numRow][numCol]=="0" &&
@@ -72,6 +77,7 @@ struct MainBoardView: View {
                                             cellClickUpd(
                                                 newVal: lastNum, oldCoord: lastCoord,
                                                 row: numRow, col: numCol)
+                                            cellHihlighted[numRow][numCol] = true
                                         } else {
                                             // This tiles are not exchangable - reset last click
                                             lastNum = ""
@@ -81,6 +87,7 @@ struct MainBoardView: View {
                                                 "OK"
                                             ]
                                             showAlert = true
+                                            cellHihlighted[lastCoord[0]][lastCoord[1]] = false
                                             print("worng move")
                                         }
                                     }

@@ -2,7 +2,7 @@
 //  BoardCellView.swift
 //  MyFirstApp
 //
-//  Created by Admin on 10.10.2020.
+//  Created by scadl on 10.10.2020.
 //
 
 import SwiftUI
@@ -37,22 +37,12 @@ struct BoardCellView: View {
     
     func checkZero()->some View{
         DispatchQueue.main.async {
-            cellColor = cellText==" " ? Color.gray : Color.blue
             shouldUpd = false
         }        
         return EmptyView()
     }
     
     func actColor(){
-        if(cellColor==Color.blue){
-            if (cellText == " "){
-                cellColor = Color.blue
-            } else {
-                cellColor = Color.purple
-            }
-        } else if(cellColor==Color.purple) {
-            cellColor = Color.blue
-        }
         onTo()
         //print(cellText)
     }
