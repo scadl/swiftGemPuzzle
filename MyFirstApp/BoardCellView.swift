@@ -11,7 +11,8 @@ struct BoardCellView: View {
     
     var cellText:String                 // Cell label
     var cellSize:CGFloat                // Cell size
-    var cellColor:Color                 // cell color value
+    var cellColor:LinearGradient        // cell fill color
+    var cellBorder:Color                // cell border color
     @State var shouldUpd = true         // UI AutoUpdate flag
     
     let onTo:()->Void
@@ -19,16 +20,18 @@ struct BoardCellView: View {
     var body: some View {
         
         HStack{
+            
             Button(cellText, action: {
                 actColor()
             }).font(.title)
-                .frame(width: cellSize, height: cellSize, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
+                .frame(width: cellSize, height: cellSize, alignment: .center)
                 .background(cellColor)
-                .foregroundColor(.white)
+                .foregroundColor(.blue)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
-                .overlay(RoundedRectangle(cornerRadius: 10).stroke())
+                .overlay(RoundedRectangle(cornerRadius: 10).stroke().fill(cellBorder))
+            
         }
-        
+         
         if(shouldUpd){
             //checkZero()
         }
@@ -50,6 +53,14 @@ struct BoardCellView: View {
 
 struct BoardCellView_Previews: PreviewProvider {
     static var previews: some View {
-        BoardCellView(cellText: "#", cellSize: 70, cellColor: Color.blue, onTo: {})
+        BoardCellView(
+            cellText: "#",
+            cellSize: 70,
+            cellColor: LinearGradient(
+                gradient: Gradient(colors: [Color.white, Color.init(red: 140/255, green: 189/255, blue: 255/255)]),
+                startPoint: .leading, endPoint: .trailing),
+            cellBorder: Color.blue,
+            onTo: {}
+        )
     }
 }

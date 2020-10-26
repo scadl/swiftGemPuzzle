@@ -36,9 +36,9 @@ struct MainBoardView: View {
     )
     
     var body: some View {
-
+        
         VStack{
-            Text("Turn: "+String(turn))
+            Text("Turn: "+String(turn)).foregroundColor(.blue).padding()
             
             // Row building cycle
             ForEach(counter, id:\.self){ numRow in
@@ -53,52 +53,79 @@ struct MainBoardView: View {
                         }
                         
                         BoardCellView(
-                                cellText: cellNumb[numRow][numCol]=="0" ? " " : cellNumb[numRow][numCol],
-                                cellSize: cellSize,
-                            cellColor: cellHihlighted[numRow][numCol]||cellNumb[numRow][numCol]=="0" ? Color.purple : Color.blue,
-                                onTo: {
-                                    // click event callback
-                                    if (lastNum==""){
-                                        // Remember value of first click
-                                        lastNum = cellNumb[numRow][numCol]
-                                        lastCoord = [numRow, numCol]
-                                        cellHihlighted[numRow][numCol] = true
-                                    } else {
-                                        if(
-                                            cellNumb[numRow][numCol]=="0" &&
+                            cellText: cellNumb[numRow][numCol]=="0" ? " " : cellNumb[numRow][numCol],
+                            cellSize: cellSize,
+                            cellColor:
+                                cellHihlighted[numRow][numCol]||cellNumb[numRow][numCol]=="0"
+                                ? LinearGradient(
+                                    gradient: .init(colors: [Color.init(white: 0, opacity: 0), Color.init(white: 0, opacity: 0)]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ) : LinearGradient(
+                                    gradient: .init(colors: [Color.white, Color.init(red: 140/255, green: 189/255, blue: 255/255)]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                            cellBorder: cellNumb[numRow][numCol]=="0"||cellHihlighted[numRow][numCol]
+                                ? Color.init(white: 0, opacity: 0)
+                                : Color.blue,
+                            onTo: {
+                                // click event callback
+                                if (lastNum==""){
+                                    // Remember value of first click
+                                    lastNum = cellNumb[numRow][numCol]
+                                    lastCoord = [numRow, numCol]
+                                    cellHihlighted[numRow][numCol] = true
+                                    
+                                } else {
+                                    if(
+                                        cellNumb[numRow][numCol]=="0" &&
                                             (
                                                 (lastCoord[0]==numRow-1 && lastCoord[1]==numCol) ||
-                                                (lastCoord[0]==numRow+1 && lastCoord[1]==numCol) ||
-                                                (lastCoord[0]==numRow && lastCoord[1]==numCol-1) ||
-                                                (lastCoord[0]==numRow && lastCoord[1]==numCol+1)
+                                                    (lastCoord[0]==numRow+1 && lastCoord[1]==numCol) ||
+                                                    (lastCoord[0]==numRow && lastCoord[1]==numCol-1) ||
+                                                    (lastCoord[0]==numRow && lastCoord[1]==numCol+1)
                                             )
-                                        ){
-                                            // Write value of first clik to second
-                                            cellClickUpd(
-                                                newVal: lastNum, oldCoord: lastCoord,
-                                                row: numRow, col: numCol)
-                                            cellHihlighted[lastCoord[0]][lastCoord[1]] = false
-                                        } else {
-                                            // This tiles are not exchangable - reset last click
-                                            lastNum = ""
-                                            alertText=[
-                                                "Error!",
-                                                "This is a wrong move",
-                                                "OK"
-                                            ]
-                                            showAlert = true
-                                            cellHihlighted[numRow][numCol] = false
-                                            cellHihlighted[lastCoord[0]][lastCoord[1]] = false
-                                            print("worng move")
-                                        }
+                                    ){
+                                        // Write value of first clik to second
+                                        cellClickUpd(
+                                            newVal: lastNum, oldCoord: lastCoord,
+                                            row: numRow, col: numCol)
+                                        cellHihlighted[lastCoord[0]][lastCoord[1]] = false
+                                    } else {
+                                        // This tiles are not exchangable - reset last click
+                                        lastNum = ""
+                                        cellHihlighted[numRow][numCol] = false
+                                        cellHihlighted[lastCoord[0]][lastCoord[1]] = false
+                                        print("worng move")
                                     }
                                 }
-                        )
+                            }
+                        ).scaleEffect(
+                            cellHihlighted[numRow][numCol] ? 1.7 : 0.9)
+                        .animation(.easeInOut(duration:0.5))
+                        
+                        
+                        /*
+                         .scaleEffect(
+                             cellHihlighted[numRow][numCol] ? 1.7 : 0.9)
+                        ).transformEffect(
+                            cellHihlighted[numRow][numCol]
+                                ? CGAffineTransform(translationX: 1, y: 50)
+                                : CGAffineTransform(translationX: 1, y: 1)
+                        ).animation(.easeInOut)
+                        .transition(
+                            AnyTransition.asymmetric(
+                                        insertion: AnyTransition.move(edge: .trailing),
+                                        removal: AnyTransition.scale
+                            ).animation(.easeInOut(duration:2))
+                        )*/
+                        
                         
                         
                     }
                 }.padding(2)
-                  
+                
             }
             
             // Allow to update the board
@@ -109,7 +136,6 @@ struct MainBoardView: View {
             let _ = print(cellNumb)
             
         }
-        
         .alert(isPresented: $showAlert, content: {
             Alert(
                 title: Text(alertText[0]),
@@ -118,13 +144,15 @@ struct MainBoardView: View {
             )
         })
         
+        
+        
     }
     
     // A function for generating non-repeating random numbers
     func getRandAndRemove(row:Int,col:Int)->some View{
         
         var cur = 0
-                            
+        
         while((nums.firstIndex(of: String(cur))) != nil){
             cur = Int.random(in: 1...Int(pow(Double(counter.count),2))-1)
         }
