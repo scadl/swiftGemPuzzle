@@ -52,7 +52,7 @@ struct MainMenuView: View {
                                 .background(Color.blue)
                                 .clipShape(RoundedRectangle(cornerRadius: btnRadius))
                         }
-                    )
+                    ).navigationTitle("Main menu")
                 
                 
                 

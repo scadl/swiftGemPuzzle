@@ -38,117 +38,106 @@ struct MainBoardView: View {
     var body: some View {
         
         VStack{
-            Text("Turn: "+String(turn)).foregroundColor(.blue).padding()
-            
-            // Row building cycle
-            ForEach(counter, id:\.self){ numRow in
+            Text("Turn: "+String(turn)).foregroundColor(.blue).padding(3)
+            VStack{
                 
-                HStack {
-                    // Column building cycle
-                    ForEach(counter, id:\.self){ numCol in
-                        
-                        // Generate and store new random number
-                        if(shouldUpd){
-                            getRandAndRemove(row: numRow, col: numCol)
-                        }
-                        
-                        BoardCellView(
-                            cellText: cellNumb[numRow][numCol]=="0" ? " " : cellNumb[numRow][numCol],
-                            cellSize: cellSize,
-                            cellColor:
-                                cellHihlighted[numRow][numCol]||cellNumb[numRow][numCol]=="0"
-                                ? LinearGradient(
-                                    gradient: .init(colors: [Color.init(white: 0, opacity: 0), Color.init(white: 0, opacity: 0)]),
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ) : LinearGradient(
-                                    gradient: .init(colors: [Color.white, Color.init(red: 140/255, green: 189/255, blue: 255/255)]),
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ),
-                            cellBorder: cellNumb[numRow][numCol]=="0"||cellHihlighted[numRow][numCol]
-                                ? Color.init(white: 0, opacity: 0)
-                                : Color.blue,
-                            onTo: {
-                                // click event callback
-                                if (lastNum==""){
-                                    // Remember value of first click
-                                    lastNum = cellNumb[numRow][numCol]
-                                    lastCoord = [numRow, numCol]
-                                    cellHihlighted[numRow][numCol] = true
-                                    
-                                } else {
-                                    if(
-                                        cellNumb[numRow][numCol]=="0" &&
-                                            (
-                                                (lastCoord[0]==numRow-1 && lastCoord[1]==numCol) ||
-                                                    (lastCoord[0]==numRow+1 && lastCoord[1]==numCol) ||
-                                                    (lastCoord[0]==numRow && lastCoord[1]==numCol-1) ||
-                                                    (lastCoord[0]==numRow && lastCoord[1]==numCol+1)
-                                            )
-                                    ){
-                                        // Write value of first clik to second
-                                        cellClickUpd(
-                                            newVal: lastNum, oldCoord: lastCoord,
-                                            row: numRow, col: numCol)
-                                        cellHihlighted[lastCoord[0]][lastCoord[1]] = false
-                                    } else {
-                                        // This tiles are not exchangable - reset last click
-                                        lastNum = ""
-                                        cellHihlighted[numRow][numCol] = false
-                                        cellHihlighted[lastCoord[0]][lastCoord[1]] = false
-                                        print("worng move")
-                                    }
-                                }
+                
+                // Row building cycle
+                ForEach(counter, id:\.self){ numRow in
+                    
+                    HStack(alignment: .center, spacing: 0.0) {
+                        // Column building cycle
+                        ForEach(counter, id:\.self){ numCol in
+                            
+                            // Generate and store new random number
+                            if(shouldUpd){
+                                getRandAndRemove(row: numRow, col: numCol)
                             }
-                        ).scaleEffect(
-                            cellHihlighted[numRow][numCol] ? 1.7 : 0.9)
-                        .animation(.easeInOut(duration:0.5))
-                        
-                        
-                        /*
-                         .scaleEffect(
-                             cellHihlighted[numRow][numCol] ? 1.7 : 0.9)
-                        ).transformEffect(
-                            cellHihlighted[numRow][numCol]
-                                ? CGAffineTransform(translationX: 1, y: 50)
-                                : CGAffineTransform(translationX: 1, y: 1)
-                        ).animation(.easeInOut)
-                        .transition(
-                            AnyTransition.asymmetric(
-                                        insertion: AnyTransition.move(edge: .trailing),
-                                        removal: AnyTransition.scale
-                            ).animation(.easeInOut(duration:2))
-                        )*/
-                        
-                        
-                        
-                    }
-                }.padding(2)
+                            
+                            BoardCellView(
+                                cellText: cellNumb[numRow][numCol]=="0" ? " " : cellNumb[numRow][numCol],
+                                cellSize: cellSize,
+                                cellColor: setCellFill(Row: numRow, Col: numCol),
+                                cellBorder: cellNumb[numRow][numCol]=="0"
+                                    ? Color.init(white: 0, opacity: 0)
+                                    : Color.blue
+                            ).modifier(
+                                dragBinder(
+                                    label: cellNumb[numRow][numCol],
+                                    actionCall: {cellClickProcessor(Row: numRow, Col: numCol)}
+                                )
+                            )
+                            
+                        }
+                    }.padding(0.0)
+                    
+                }
+                
+                // Allow to update the board
+                if (shouldUpd){
+                    storeBoardValues()
+                }
+                let _ = print(cellNumbI)
+                let _ = print(cellNumb)
                 
             }
-            
-            // Allow to update the board
-            if (shouldUpd){
-                storeBoardValues()
-            }
-            let _ = print(cellNumbI)
-            let _ = print(cellNumb)
-            
+            .alert(isPresented: $showAlert, content: {
+                Alert(
+                    title: Text(alertText[0]),
+                    message: Text(alertText[1]),
+                    dismissButton: .default(Text(alertText[2]))
+                )
+            }).overlay(Rectangle().stroke().fill(Color.blue))
         }
-        .alert(isPresented: $showAlert, content: {
-            Alert(
-                title: Text(alertText[0]),
-                message: Text(alertText[1]),
-                dismissButton: .default(Text(alertText[2]))
-            )
-        })
-        
-        
         
     }
     
-    // A function for generating non-repeating random numbers
+    // Custom modifier for binding right mechanic
+    struct dragBinder:ViewModifier {
+        var label:String
+        let actionCall:()->Void
+        func body(content: Content) -> some View {
+            // A conatainer allowing "returning [NOT] multiple views"
+            VStack{
+                // Create drop zone only at empty cell
+                if(label=="0"){
+                    content.onDrop(of: ["public.text"], delegate: dropProc(binderCall: actionCall))
+                } else {
+                    content.onDrag{
+                        actionCall()
+                        return NSItemProvider(object: label as NSString)
+                        
+                    }
+                }
+            }
+        }
+    }
+    
+    // DropZone processor
+    struct dropProc: DropDelegate {
+        let binderCall:()->Void
+        
+        func validateDrop(info: DropInfo) -> Bool {
+            return info.hasItemsConforming(to: ["public.text"])
+        }
+        
+        func dropEntered(info: DropInfo) {
+            //NSSound(named: "Morse")?.play()
+        }
+        
+        func performDrop(info: DropInfo) -> Bool {
+            info.itemProviders(for: ["public.text"])[0].loadObject(ofClass: String.self){ str,_ in
+                DispatchQueue.main.async {
+                    binderCall()
+                    print(str!)
+                }
+            }
+            return true
+        }
+        
+    }
+    
+    // Generating non-repeating random numbers
     func getRandAndRemove(row:Int,col:Int)->some View{
         
         var cur = 0
@@ -164,7 +153,7 @@ struct MainBoardView: View {
     }
     
     // Process visual cahnges of current turn
-    func cellClickUpd(newVal:String,oldCoord:[Int],row:Int,col:Int){
+    func cellClickVisual(newVal:String,oldCoord:[Int],row:Int,col:Int){
         cellNumb[row][col] = newVal
         cellNumb[oldCoord[0]][oldCoord[1]] = "0"
         turn += 1
@@ -187,6 +176,42 @@ struct MainBoardView: View {
         }
     }
     
+    // Click event process and check
+    func cellClickProcessor(Row:Int,Col:Int){
+        
+        print("ccP call "+String(Row)+" "+String(Col))
+        
+        if (lastNum==""){
+            // Remember value of first click
+            lastNum = cellNumb[Row][Col]
+            lastCoord = [Row, Col]
+            cellHihlighted[Row][Col] = true
+            
+        } else {
+            if(
+                cellNumb[Row][Col]=="0" &&
+                    (
+                        (lastCoord[0]==Row-1 && lastCoord[1]==Col) ||
+                            (lastCoord[0]==Row+1 && lastCoord[1]==Col) ||
+                            (lastCoord[0]==Row && lastCoord[1]==Col-1) ||
+                            (lastCoord[0]==Row && lastCoord[1]==Col+1)
+                    )
+            ){
+                // Write value of first clik to second
+                cellClickVisual(
+                    newVal: lastNum, oldCoord: lastCoord,
+                    row: Row, col: Col)
+                cellHihlighted[lastCoord[0]][lastCoord[1]] = false
+            } else {
+                // This tiles are not exchangable - reset last click
+                lastNum = ""
+                cellHihlighted[Row][Col] = false
+                cellHihlighted[lastCoord[0]][lastCoord[1]] = false
+                print("worng move")
+            }
+        }
+    }
+    
     // Fill game board with generated data
     func storeBoardValues()->some View{
         
@@ -197,6 +222,23 @@ struct MainBoardView: View {
         }
         
         return EmptyView()
+    }
+    
+    // Provide a correct fil for the cell (callback type)
+    func setCellFill(Row:Int,Col:Int)->LinearGradient{
+        if(cellNumb[Row][Col]=="0"){
+            return LinearGradient(
+                gradient: .init(colors: [Color.init(white: 0, opacity: 0), Color.init(white: 0, opacity: 0)]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }else{
+            return LinearGradient(
+                gradient: .init(colors: [Color.white, Color.init(red: 140/255, green: 189/255, blue: 255/255)]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
     }
 }
 
