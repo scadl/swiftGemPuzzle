@@ -18,16 +18,16 @@ struct BoardCellView: View {
         
         HStack{
             
-            Button(cellText, action: {
-                //actColor()
-            }).font(.title)
-                .frame(width: cellSize, height: cellSize, alignment: .center)
-                .background(cellColor)
-                .foregroundColor(.blue)
-                .overlay(Rectangle().stroke().fill(cellBorder))                
+            HStack{
+                Text(cellText)
+            }.font(.title)
+            .frame(width: cellSize, height: cellSize, alignment: .center)
+            .background(cellColor)
+            .foregroundColor(.blue)
+            .overlay(Rectangle().stroke().fill(cellBorder))
             
         }
-                 
+        
     }
         
 }

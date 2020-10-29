@@ -30,10 +30,6 @@ struct MainBoardView: View {
     @State var shouldUpd = true                                 // UI AutoUpdate flag
     @State var showAlert = false                                // show alert flag
     @State var alertText = [String](repeating: "", count: 3)    //A storage for poupup text
-    @State var cellHihlighted = [[Bool]](
-        repeating:[Bool](repeating: false, count: counter.count),
-        count: counter.count
-    )
     
     var body: some View {
         
@@ -64,7 +60,8 @@ struct MainBoardView: View {
                             ).modifier(
                                 dragBinder(
                                     label: cellNumb[numRow][numCol],
-                                    actionCall: {cellClickProcessor(Row: numRow, Col: numCol)}
+                                    actionCall: {cellClickProcessor(Row: numRow, Col: numCol)},
+                                    Row: numRow, Col: numCol
                                 )
                             )
                             
@@ -77,8 +74,8 @@ struct MainBoardView: View {
                 if (shouldUpd){
                     storeBoardValues()
                 }
-                let _ = print(cellNumbI)
-                let _ = print(cellNumb)
+                //let _ = print(cellNumbI)
+                //let _ = print(cellNumb)
                 
             }
             .alert(isPresented: $showAlert, content: {
@@ -96,6 +93,8 @@ struct MainBoardView: View {
     struct dragBinder:ViewModifier {
         var label:String
         let actionCall:()->Void
+        var Row:Int
+        var Col:Int
         func body(content: Content) -> some View {
             // A conatainer allowing "returning [NOT] multiple views"
             VStack{
@@ -103,10 +102,18 @@ struct MainBoardView: View {
                 if(label=="0"){
                     content.onDrop(of: ["public.text"], delegate: dropProc(binderCall: actionCall))
                 } else {
-                    content.onDrag{
-                        actionCall()
-                        return NSItemProvider(object: label as NSString)
-                        
+                    if(
+                        (lastCoord[0]==Row-1 && lastCoord[1]==Col) ||
+                            (lastCoord[0]==Row+1 && lastCoord[1]==Col) ||
+                            (lastCoord[0]==Row && lastCoord[1]==Col-1) ||
+                            (lastCoord[0]==Row && lastCoord[1]==Col+1)
+                    ){
+                        content.onDrag{
+                            actionCall()
+                            return NSItemProvider(object: label as NSString)
+                        }
+                    } else{
+                        content
                     }
                 }
             }
@@ -129,7 +136,7 @@ struct MainBoardView: View {
             info.itemProviders(for: ["public.text"])[0].loadObject(ofClass: String.self){ str,_ in
                 DispatchQueue.main.async {
                     binderCall()
-                    print(str!)
+                    //print(str!)
                 }
             }
             return true
@@ -179,34 +186,24 @@ struct MainBoardView: View {
     // Click event process and check
     func cellClickProcessor(Row:Int,Col:Int){
         
-        print("ccP call "+String(Row)+" "+String(Col))
+        //print("cCP call "+String(Row)+" "+String(Col))
         
         if (lastNum==""){
             // Remember value of first click
             lastNum = cellNumb[Row][Col]
             lastCoord = [Row, Col]
-            cellHihlighted[Row][Col] = true
             
         } else {
             if(
-                cellNumb[Row][Col]=="0" &&
-                    (
-                        (lastCoord[0]==Row-1 && lastCoord[1]==Col) ||
-                            (lastCoord[0]==Row+1 && lastCoord[1]==Col) ||
-                            (lastCoord[0]==Row && lastCoord[1]==Col-1) ||
-                            (lastCoord[0]==Row && lastCoord[1]==Col+1)
-                    )
+                cellNumb[Row][Col]=="0" 
             ){
                 // Write value of first clik to second
                 cellClickVisual(
                     newVal: lastNum, oldCoord: lastCoord,
                     row: Row, col: Col)
-                cellHihlighted[lastCoord[0]][lastCoord[1]] = false
             } else {
                 // This tiles are not exchangable - reset last click
                 lastNum = ""
-                cellHihlighted[Row][Col] = false
-                cellHihlighted[lastCoord[0]][lastCoord[1]] = false
                 print("worng move")
             }
         }
@@ -217,6 +214,9 @@ struct MainBoardView: View {
         
         DispatchQueue.main.async {
             nums.removeAll()
+            lastNum = ""
+            lastCoord = [0,0]
+            turn = 0
             cellNumb = cellNumbI
             shouldUpd = false
         }
