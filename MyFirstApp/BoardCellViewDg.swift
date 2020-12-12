@@ -7,24 +7,26 @@
 
 import SwiftUI
 
-struct BoardCellView: View {
+struct BoardCellViewDg: View {
     
     var cellText:String                 // Cell label
     var cellSize:CGFloat                // Cell size
-    var cellColor:Image        // cell fill color
-    var cellBorder:Color                // cell border color
     
     var body: some View {
         
         HStack{
-            
-            HStack{
-                Text(cellText)
-            }.font(.title)
-            .frame(width: cellSize, height: cellSize, alignment: .center)
-            .background(cellColor.resizable().scaledToFit())
-            .foregroundColor(.white)
-            .overlay(Rectangle().stroke().fill(cellBorder))
+            Image(cellText)
+                .resizable()
+                .scaledToFit()
+                .frame(
+                    width: cellSize,
+                    height: cellSize,
+                    alignment: .center)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 5.0)
+                        .stroke()
+                        .fill(Color.gray)
+                )               
             
         }
         
@@ -32,7 +34,7 @@ struct BoardCellView: View {
         
 }
 
-struct BoardCellView_Previews: PreviewProvider {
+struct BoardCellViewDg_Previews: PreviewProvider {
     static var previews: some View {
         BoardCellView(
             cellText: "#",

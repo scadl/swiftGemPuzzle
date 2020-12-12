@@ -11,11 +11,11 @@ var turn:Int = 0                // Player turns count
 var nums:[String] = []          // Storage of used number
 var counter:[Int] = [0,1,2,3]           // Game board cells count and index
 let cellSize:CGFloat = 70.0             // Game baord cells size
-var lastNum = ""                        // Last clicked board cells value
-var lastCoord = [Int](repeating: 0, count: 2)   // Coords of last clicked tile
+var lastNum = ""                         // Last clicked board cells value
+var lastCoord = [Int](repeating: 0, count: 2)    // Coords of last clicked tile
 
 // A matrix for stroring intal values for board
-var cellNumbI = [[String]](
+var cellNumbI = [[String]]( 
     repeating: [String](repeating: "", count: counter.count),
     count: counter.count
 )
@@ -225,19 +225,11 @@ struct MainBoardView: View {
     }
     
     // Provide a correct fil for the cell (callback type)
-    func setCellFill(Row:Int,Col:Int)->LinearGradient{
+    func setCellFill(Row:Int,Col:Int)->Image{
         if(cellNumb[Row][Col]=="0"){
-            return LinearGradient(
-                gradient: .init(colors: [Color.init(white: 0, opacity: 0), Color.init(white: 0, opacity: 0)]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            return Image("cellBgE")
         }else{
-            return LinearGradient(
-                gradient: .init(colors: [Color.white, Color.init(red: 140/255, green: 189/255, blue: 255/255)]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            return Image("cellBg")
         }
     }
 }

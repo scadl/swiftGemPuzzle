@@ -44,7 +44,7 @@ struct MainMenuView: View {
                         label: {
                             HStack {
                                 Image(systemName: "play")
-                                Text("Let's start")
+                                Text("Let's drop")
                             }
                             .foregroundColor(.white)
                                 .padding(uiPadding)
@@ -53,6 +53,21 @@ struct MainMenuView: View {
                                 .clipShape(RoundedRectangle(cornerRadius: btnRadius))
                         }
                     ).navigationTitle("Main menu")
+                
+                NavigationLink(
+                    destination: MainBoardViewDg(),
+                    label: {
+                        HStack {
+                            Image(systemName: "play")
+                            Text("Let's drag")
+                        }
+                        .foregroundColor(.white)
+                            .padding(uiPadding)
+                            .frame(width: btnHeigh, height: 40, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
+                            .background(Color.blue)
+                            .clipShape(RoundedRectangle(cornerRadius: btnRadius))
+                    }
+                ).navigationTitle("Main menu")
                 
                 
                 
