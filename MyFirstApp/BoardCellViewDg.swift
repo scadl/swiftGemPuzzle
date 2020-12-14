@@ -15,6 +15,13 @@ struct BoardCellViewDg: View {
     var body: some View {
         
         HStack{
+            if (cellText == "tile_0"){
+                EmptyView()
+                    .frame(
+                    width: cellSize,
+                    height: cellSize,
+                    alignment: .center)
+            } else {
             Image(cellText)
                 .resizable()
                 .scaledToFit()
@@ -26,7 +33,8 @@ struct BoardCellViewDg: View {
                     RoundedRectangle(cornerRadius: 5.0)
                         .stroke()
                         .fill(Color.gray)
-                )               
+                )
+            }
             
         }
         

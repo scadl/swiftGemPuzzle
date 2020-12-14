@@ -10,24 +10,25 @@ import SwiftUI
 struct MainMenuView: View {
     
     @State private var showingAlert:Bool = false
-    var icoPadding:CGFloat = 0.1
+    var icoPadding:CGFloat = 3
     var btnHeigh:CGFloat = 200.0
     var btnRadius:CGFloat = 15.0
     var uiPadding:CGFloat = 5.0
+    var icoCell:CGFloat = 30.0
     
     var body: some View {
         
         NavigationView{
         VStack {
             
-            VStack {
-                HStack {
-                    Image(systemName: "number.square").padding(icoPadding)
-                    Image(systemName: "number.square").padding(icoPadding)
+            VStack(spacing: icoPadding) {
+                HStack(spacing: icoPadding) {
+                    Image(systemName: "number.square").resizable().scaledToFit().frame(width: icoCell, height: icoCell)
+                    Image(systemName: "number.square").resizable().scaledToFit().frame(width: icoCell, height: icoCell)
                 }
-                HStack {
-                    Image(systemName: "number.square").padding(icoPadding)
-                    Image(systemName: "number.square.fill").padding(icoPadding)
+                HStack(spacing: icoPadding) {
+                    Image(systemName: "number.square").resizable().scaledToFit().frame(width: icoCell, height: icoCell)
+                    Image(systemName: "number.square.fill").resizable().scaledToFit().frame(width: icoCell, height: icoCell)
                 }
             }
             

@@ -7,12 +7,11 @@
 
 import SwiftUI
 
-var turnDg:Int = 0                        // Player turnDgs count
 var numsDg:[String] = []                  // Storage of used number
 var counterDg:[Int] = [0,1,2,3]           // Game board cells count and index
 let cellSizeDg:CGFloat = 70.0             // Game baord cells size
-var lastNumDg = ""                        // Last clicked board cells value
-var lastCoordDg = [Int](repeating: 0, count: 2)   // Coords of last clicked tile
+var dragFirstTick:Bool = true                        // Is thi is first drag tick
+var dragStartPoint:CGPoint = CGPoint(x: 0, y: 0)   // Coords of last clicked tile
 
 // A matrix for stroring intal values for board
 var cellNumbIDg = [[String]](
@@ -22,27 +21,23 @@ var cellNumbIDg = [[String]](
 
 struct MainBoardViewDg: View {
     
+    
     let dragProvider = DragGesture(minimumDistance: 0, coordinateSpace: .local)
     
     // Dictioanry of actual cells values
     @State var cellNumb = [[String]](
-        repeating: [String](repeating: "#", count: counterDg.count),
+        repeating: [String](repeating: "", count: counterDg.count),
         count: counterDg.count
     )
     // Current cell coordinates
-    @State var cellCoords = [[[CGFloat]]](
-        repeating: [[CGFloat]](
-                repeating: [CGFloat](
-                    repeating:cellSizeDg/2,
-                    count:2
-                ),
-            count: counterDg.count
-        ),
+    @State var cellCoords = [[CGPoint]](
+        repeating: [CGPoint](repeating: CGPoint(x: cellSizeDg/2, y: cellSizeDg/2), count: counterDg.count),
         count: counterDg.count
     )
     @State var shouldUpd = true                                 // UI AutoUpdate flag
     @State var showAlert = false                                // show alert flag
     @State var alertText = [String](repeating: "", count: 3)    //A storage for poupup text
+    @State var turnDg:Int = 0                                   // Player turnDgs count
     
     var body: some View {
         
@@ -67,11 +62,24 @@ struct MainBoardViewDg: View {
                                 cellSize: cellSizeDg
                             )
                             .position(
-                                x: cellCoords[numRow][numCol][0],
-                                y: cellCoords[numRow][numCol][1]
-                            ).gesture(dragProvider.onChanged{
-                                controlDrag(cursorPos: $0.location, cellRow: numRow, cellCol: numCol)
-                            })
+                                x: cellCoords[numRow][numCol].x,
+                                y: cellCoords[numRow][numCol].y
+                            ).gesture(dragProvider
+                                        .onChanged{
+                                            controlDrag(
+                                                cursorPos: $0.location,
+                                                cellRow: numRow,
+                                                cellCol: numCol
+                                            )
+                                        }
+                                        .onEnded{
+                                            checkTurn(
+                                                cursorPos: $0.location,
+                                                cellRow: numRow,
+                                                cellCol: numCol
+                                            )
+                                        }
+                            )
                         }
                     }.padding(0.0)
                     
@@ -120,8 +128,6 @@ struct MainBoardViewDg: View {
     func storeBoardValues()->some View{
         DispatchQueue.main.async {
             numsDg.removeAll()
-            lastNumDg = ""
-            lastCoordDg = [0,0]
             turnDg = 0
             cellNumb = cellNumbIDg
             shouldUpd = false
@@ -129,17 +135,69 @@ struct MainBoardViewDg: View {
         return EmptyView()
     }
     
+    func calcAxisVal(cell:Int)->[String:CGFloat]{
+        let boardMinAxisVal = cellSizeDg/2 - cellSizeDg*CGFloat(cell)
+        let boardMaxAxisVal = (cellSizeDg*CGFloat(counterDg.count-cell))-(cellSize/2)
+        return ["min":boardMinAxisVal+5, "max":boardMaxAxisVal+5]
+    }
+    
     // Visible tile move controller
     func controlDrag(cursorPos:CGPoint, cellRow:Int, cellCol:Int){
-        let boardMinAxisVal = cellSizeDg/2
-        let boardMaxAxisVal = (cellSizeDg*CGFloat(counterDg.count))-(cellSize/2)
-        if(cursorPos.x > boardMinAxisVal && cursorPos.x < boardMaxAxisVal){
-            cellCoords[cellRow][cellCol][0] = cursorPos.x
+        
+        
+        if(dragFirstTick){
+            dragStartPoint.x = cellCoords[cellRow][cellCol].x
+            dragStartPoint.y = cellCoords[cellRow][cellCol].y
+            dragFirstTick = false
         }
-        if(cursorPos.y > boardMinAxisVal && cursorPos.y < boardMaxAxisVal){
-            cellCoords[cellRow][cellCol][1] = cursorPos.y
+        
+        // Check for neigbour and calc alowed move trajectory
+        var xPlusLock:CGFloat = dragStartPoint.x
+        var xMinusLock:CGFloat = dragStartPoint.x
+        var yPlusLock:CGFloat = dragStartPoint.y
+        var yMinusLock:CGFloat = dragStartPoint.y
+        if !(cellCol-1<0) && dragStartPoint.x>calcAxisVal(cell: cellCol)["min"]! {
+            xPlusLock = cellNumb[cellRow][cellCol-1]=="0"
+                ? xPlusLock-cellSizeDg
+                : xPlusLock
         }
+        if !(cellCol+1>counterDg.count) && dragStartPoint.x>calcAxisVal(cell: cellCol)["max"]!{
+            xMinusLock = cellNumb[cellRow][cellCol+1]=="0"
+                ? xMinusLock+cellSizeDg
+                : xMinusLock
+        }
+        if !(cellRow-1<0) && dragStartPoint.y>calcAxisVal(cell: cellRow)["min"]! {
+            yPlusLock = cellNumb[cellRow-1][cellCol]=="0"
+                ? yPlusLock-cellSizeDg
+                : yPlusLock
+        }
+        if !(cellRow+1>counterDg.count) && dragStartPoint.y>calcAxisVal(cell: cellRow)["max"]!{
+            yMinusLock = cellNumb[cellRow+1][cellCol]=="0"
+                ? yMinusLock+cellSizeDg
+                : yMinusLock
+        }
+        
+        // Real drag controller by coords
+        if(
+            cursorPos.x > xPlusLock &&
+                cursorPos.x < xMinusLock
+        ){
+            cellCoords[cellRow][cellCol].x = cursorPos.x
+        }
+        if(
+            cursorPos.y >  yPlusLock &&
+                cursorPos.y < yMinusLock
+        ){
+            cellCoords[cellRow][cellCol].y = cursorPos.y
+        }
+        
         print(cursorPos)
+    }
+    
+    func checkTurn(cursorPos:CGPoint, cellRow:Int, cellCol:Int){
+        turnDg += 1
+        dragFirstTick = true
+        dragStartPoint = CGPoint(x: 0, y: 0)
     }
     
 }
