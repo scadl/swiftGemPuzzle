@@ -12,21 +12,26 @@ var counterDg:[Int] = [0,1,2,3]           // Game board cells count and index
 let cellSizeDg:CGFloat = 70.0             // Game baord cells size
 var dragFirstTick:Bool = true                        // Is thi is first drag tick
 var dragStartPoint:CGPoint = CGPoint(x: 0, y: 0)   // Coords of last clicked tile
+var rightTurn:Bool = false                           // This turn is right
+// Drag limeters
+var xPlusLock:CGFloat = 0.0
+var xMinusLock:CGFloat = 0.0
+var yPlusLock:CGFloat = 0.0
+var yMinusLock:CGFloat = 0.0
 
 // A matrix for stroring intal values for board
-var cellNumbIDg = [[String]](
-    repeating: [String](repeating: "", count: counterDg.count),
+var cellNumbInitDg = [[Int]](
+    repeating: [Int](repeating: 0, count: counterDg.count),
     count: counterDg.count
 )
 
 struct MainBoardViewDg: View {
     
-    
     let dragProvider = DragGesture(minimumDistance: 0, coordinateSpace: .local)
     
     // Dictioanry of actual cells values
-    @State var cellNumb = [[String]](
-        repeating: [String](repeating: "", count: counterDg.count),
+    @State var cellNumb = [[Int]](
+        repeating: [Int](repeating: 0, count: counterDg.count),
         count: counterDg.count
     )
     // Current cell coordinates
@@ -38,11 +43,11 @@ struct MainBoardViewDg: View {
     @State var showAlert = false                                // show alert flag
     @State var alertText = [String](repeating: "", count: 3)    //A storage for poupup text
     @State var turnDg:Int = 0                                   // Player turnDgs count
-    
+        
     var body: some View {
         
         VStack{
-            Text("Current turn: "+String(turnDg)).foregroundColor(.blue).padding(3)
+            Text("Current turn: "+String(turnDg)).foregroundColor(.blue)
             VStack(alignment: .center, spacing: 0.0){
                 
                 // Row building cycle
@@ -58,7 +63,7 @@ struct MainBoardViewDg: View {
                             }
                             
                             BoardCellViewDg(
-                                cellText: "tile_" + cellNumb[numRow][numCol],
+                                cellText: "tile_" + String(cellNumb[numRow][numCol]),
                                 cellSize: cellSizeDg
                             )
                             .position(
@@ -120,7 +125,7 @@ struct MainBoardViewDg: View {
             cur = Int.random(in: 1...Int(pow(Double(counterDg.count),2))-1)
         }
         numsDg.append(String(cur))
-        cellNumbIDg[row][col] = String(cur)
+        cellNumbInitDg[row][col] = cur
         return EmptyView()
     }
     
@@ -129,7 +134,7 @@ struct MainBoardViewDg: View {
         DispatchQueue.main.async {
             numsDg.removeAll()
             turnDg = 0
-            cellNumb = cellNumbIDg
+            cellNumb = cellNumbInitDg
             shouldUpd = false
         }
         return EmptyView()
@@ -138,7 +143,7 @@ struct MainBoardViewDg: View {
     func calcAxisVal(cell:Int)->[String:CGFloat]{
         let boardMinAxisVal = cellSizeDg/2 - cellSizeDg*CGFloat(cell)
         let boardMaxAxisVal = (cellSizeDg*CGFloat(counterDg.count-cell))-(cellSize/2)
-        return ["min":boardMinAxisVal+5, "max":boardMaxAxisVal+5]
+        return ["min":boardMinAxisVal, "max":boardMaxAxisVal]
     }
     
     // Visible tile move controller
@@ -146,35 +151,47 @@ struct MainBoardViewDg: View {
         
         
         if(dragFirstTick){
+            
+            // Will invoke only when drag starts
+            
             dragStartPoint.x = cellCoords[cellRow][cellCol].x
             dragStartPoint.y = cellCoords[cellRow][cellCol].y
             dragFirstTick = false
-        }
-        
-        // Check for neigbour and calc alowed move trajectory
-        var xPlusLock:CGFloat = dragStartPoint.x
-        var xMinusLock:CGFloat = dragStartPoint.x
-        var yPlusLock:CGFloat = dragStartPoint.y
-        var yMinusLock:CGFloat = dragStartPoint.y
-        if !(cellCol-1<0) && dragStartPoint.x>calcAxisVal(cell: cellCol)["min"]! {
-            xPlusLock = cellNumb[cellRow][cellCol-1]=="0"
-                ? xPlusLock-cellSizeDg
-                : xPlusLock
-        }
-        if !(cellCol+1>counterDg.count) && dragStartPoint.x>calcAxisVal(cell: cellCol)["max"]!{
-            xMinusLock = cellNumb[cellRow][cellCol+1]=="0"
-                ? xMinusLock+cellSizeDg
-                : xMinusLock
-        }
-        if !(cellRow-1<0) && dragStartPoint.y>calcAxisVal(cell: cellRow)["min"]! {
-            yPlusLock = cellNumb[cellRow-1][cellCol]=="0"
-                ? yPlusLock-cellSizeDg
-                : yPlusLock
-        }
-        if !(cellRow+1>counterDg.count) && dragStartPoint.y>calcAxisVal(cell: cellRow)["max"]!{
-            yMinusLock = cellNumb[cellRow+1][cellCol]=="0"
-                ? yMinusLock+cellSizeDg
-                : yMinusLock
+            
+            // Set move lock to inital position
+            xPlusLock = dragStartPoint.x
+            xMinusLock = dragStartPoint.x
+            yPlusLock = dragStartPoint.y
+            yMinusLock = dragStartPoint.y
+            // Check for neigbour and alowed move to one tile, if not fall out of values array
+            if !(cellCol-1<0) && dragStartPoint.x>calcAxisVal(cell: cellCol)["min"]! {
+                if (cellNumb[cellRow][cellCol-1]==0){
+                    xPlusLock -= cellSizeDg
+                    rightTurn = true
+                    print("xPlusLock")
+                }
+            }
+            if !(cellCol+1>counterDg.count) && dragStartPoint.x<calcAxisVal(cell: cellCol)["max"]!{
+                if(cellNumb[cellRow][cellCol+1]==0){
+                    xMinusLock += cellSizeDg
+                    rightTurn = true
+                    print("xMinusLock")
+                }
+            }
+            if !(cellRow-1<0) && dragStartPoint.y>calcAxisVal(cell: cellRow)["min"]! {
+                if(cellNumb[cellRow-1][cellCol]==0){
+                    yPlusLock -= cellSizeDg
+                    rightTurn = true
+                    print("yPlusLock")
+                }
+            }
+            if !(cellRow+1>counterDg.count) && dragStartPoint.y<calcAxisVal(cell: cellRow)["max"]!{
+                if(cellNumb[cellRow+1][cellCol]==0){
+                    yMinusLock += cellSizeDg
+                    rightTurn = true
+                    print("yMinusLock")
+                }
+            }
         }
         
         // Real drag controller by coords
@@ -194,10 +211,63 @@ struct MainBoardViewDg: View {
         print(cursorPos)
     }
     
+    // Move ended processor
     func checkTurn(cursorPos:CGPoint, cellRow:Int, cellCol:Int){
-        turnDg += 1
+        
+        //Check if user not finished draging tile and fix it's pos
+        if(cursorPos.x < -cellSizeDg/10 && rightTurn){
+            cellCoords[cellRow][cellCol].x = (cellSizeDg/2)
+            cellNumb[cellRow][cellCol-1] = cellNumb[cellRow][cellCol]
+            cellNumb[cellRow][cellCol] = 0
+        }
+        if(cursorPos.y < -cellSizeDg/10 && rightTurn){
+            cellCoords[cellRow][cellCol].y = (cellSizeDg/2)
+            cellNumb[cellRow-1][cellCol] = cellNumb[cellRow][cellCol]
+            cellNumb[cellRow][cellCol] = 0
+        }
+        if(cursorPos.x > cellSizeDg+cellSizeDg/10 && rightTurn){
+            cellCoords[cellRow][cellCol].x = (cellSizeDg/2)
+            cellNumb[cellRow][cellCol+1] = cellNumb[cellRow][cellCol]
+            cellNumb[cellRow][cellCol] = 0
+        }
+        if(cursorPos.y > cellSizeDg+cellSizeDg/10 && rightTurn){
+            cellCoords[cellRow][cellCol].y = (cellSizeDg/2)
+            cellNumb[cellRow+1][cellCol] = cellNumb[cellRow][cellCol]
+            cellNumb[cellRow][cellCol] = 0
+        }
+        
+        if(rightTurn){
+            turnDg+=1
+        }
+        
+        // reset turn props
+        rightTurn = false
         dragFirstTick = true
         dragStartPoint = CGPoint(x: 0, y: 0)
+        
+        // check for winner
+        let winArray:[[Int]] = [
+            [0,1,2,3],
+            [4,5,6,7],
+            [8,9,10,11],
+            [12,13,14,15]
+        ]
+        if(cellNumb==winArray){
+            alertText=[
+                "Congratulations!",
+                "You have successfully found winning combination!",
+                "Thanks!"
+            ]
+            showAlert = true
+            // Navigate back?
+        }
+        
+        print(calcAxisVal(cell: cellRow))
+        print(calcAxisVal(cell: cellCol))
+        print(cellCoords)
+        print(cellNumb)
+        
+        
     }
     
 }
