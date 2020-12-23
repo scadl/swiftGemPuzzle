@@ -12,12 +12,8 @@ var counterDg:[Int] = [0,1,2,3]           // Game board cells count and index
 let cellSizeDg:CGFloat = 70.0             // Game baord cells size
 var dragFirstTick:Bool = true                        // Is thi is first drag tick
 var dragStartPoint:CGPoint = CGPoint(x: 0, y: 0)   // Coords of last clicked tile
-var rightTurn:Bool = false                           // This turn is right
-// Drag limeters
-var xPlusLock:CGFloat = 0.0
-var xMinusLock:CGFloat = 0.0
-var yPlusLock:CGFloat = 0.0
-var yMinusLock:CGFloat = 0.0
+var rightTurn:[String:Bool] = ["x+":false, "x-":false, "y+":false, "y-":false]   // This turn is right
+var axisLock:[String:CGFloat] = ["x+":0.0, "x-":0.0, "y+":0.0, "y-":0.0] // Drag limeters
 
 // A matrix for stroring intal values for board
 var cellNumbInitDg = [[Int]](
@@ -159,36 +155,39 @@ struct MainBoardViewDg: View {
             dragFirstTick = false
             
             // Set move lock to inital position
-            xPlusLock = dragStartPoint.x
-            xMinusLock = dragStartPoint.x
-            yPlusLock = dragStartPoint.y
-            yMinusLock = dragStartPoint.y
+            axisLock["x+"] = dragStartPoint.x
+            axisLock["x-"] = dragStartPoint.x
+            axisLock["y+"] = dragStartPoint.y
+            axisLock["y-"] = dragStartPoint.y
             // Check for neigbour and alowed move to one tile, if not fall out of values array
-            if !(cellCol-1<0) && dragStartPoint.x>calcAxisVal(cell: cellCol)["min"]! {
+            if cellCol-1 >= 0 && dragStartPoint.x>calcAxisVal(cell: cellCol)["min"]! {
                 if (cellNumb[cellRow][cellCol-1]==0){
-                    xPlusLock -= cellSizeDg
-                    rightTurn = true
+                    axisLock["x+"]! -= cellSizeDg
+                    rightTurn["x+"] = true
                     print("xPlusLock")
                 }
             }
-            if !(cellCol+1>counterDg.count) && dragStartPoint.x<calcAxisVal(cell: cellCol)["max"]!{
+            if cellCol+1 <= counterDg.count-1
+                && dragStartPoint.x<calcAxisVal(cell: cellCol)["max"]!{
                 if(cellNumb[cellRow][cellCol+1]==0){
-                    xMinusLock += cellSizeDg
-                    rightTurn = true
+                    axisLock["x-"]! += cellSizeDg
+                    rightTurn["x-"] = true
                     print("xMinusLock")
                 }
             }
-            if !(cellRow-1<0) && dragStartPoint.y>calcAxisVal(cell: cellRow)["min"]! {
+            if cellRow-1 >= 0
+                && dragStartPoint.y>calcAxisVal(cell: cellRow)["min"]! {
                 if(cellNumb[cellRow-1][cellCol]==0){
-                    yPlusLock -= cellSizeDg
-                    rightTurn = true
+                    axisLock["y+"]! -= cellSizeDg
+                    rightTurn["y+"] = true
                     print("yPlusLock")
                 }
             }
-            if !(cellRow+1>counterDg.count) && dragStartPoint.y<calcAxisVal(cell: cellRow)["max"]!{
+            if cellRow+1 <= counterDg.count-1 &&
+                dragStartPoint.y<calcAxisVal(cell: cellRow)["max"]!{
                 if(cellNumb[cellRow+1][cellCol]==0){
-                    yMinusLock += cellSizeDg
-                    rightTurn = true
+                    axisLock["y-"]! += cellSizeDg
+                    rightTurn["y-"] = true
                     print("yMinusLock")
                 }
             }
@@ -196,14 +195,14 @@ struct MainBoardViewDg: View {
         
         // Real drag controller by coords
         if(
-            cursorPos.x > xPlusLock &&
-                cursorPos.x < xMinusLock
+            cursorPos.x > axisLock["x+"]! &&
+                cursorPos.x < axisLock["x-"]!
         ){
             cellCoords[cellRow][cellCol].x = cursorPos.x
         }
         if(
-            cursorPos.y >  yPlusLock &&
-                cursorPos.y < yMinusLock
+            cursorPos.y >  axisLock["y+"]! &&
+                cursorPos.y < axisLock["y-"]!
         ){
             cellCoords[cellRow][cellCol].y = cursorPos.y
         }
@@ -215,33 +214,34 @@ struct MainBoardViewDg: View {
     func checkTurn(cursorPos:CGPoint, cellRow:Int, cellCol:Int){
         
         //Check if user not finished draging tile and fix it's pos
-        if(cursorPos.x < -cellSizeDg/10 && rightTurn){
+        if(cursorPos.x < -cellSizeDg/10 && (rightTurn["x+"] == true)){
             cellCoords[cellRow][cellCol].x = (cellSizeDg/2)
             cellNumb[cellRow][cellCol-1] = cellNumb[cellRow][cellCol]
             cellNumb[cellRow][cellCol] = 0
         }
-        if(cursorPos.y < -cellSizeDg/10 && rightTurn){
+        if(cursorPos.y < -cellSizeDg/10 && (rightTurn["y+"] == true)){
             cellCoords[cellRow][cellCol].y = (cellSizeDg/2)
             cellNumb[cellRow-1][cellCol] = cellNumb[cellRow][cellCol]
             cellNumb[cellRow][cellCol] = 0
         }
-        if(cursorPos.x > cellSizeDg+cellSizeDg/10 && rightTurn){
+        if(cursorPos.x > cellSizeDg+cellSizeDg/10 && (rightTurn["x-"] == true)){
             cellCoords[cellRow][cellCol].x = (cellSizeDg/2)
             cellNumb[cellRow][cellCol+1] = cellNumb[cellRow][cellCol]
             cellNumb[cellRow][cellCol] = 0
         }
-        if(cursorPos.y > cellSizeDg+cellSizeDg/10 && rightTurn){
+        if(cursorPos.y > cellSizeDg+cellSizeDg/10 && (rightTurn["y-"] == true)){
             cellCoords[cellRow][cellCol].y = (cellSizeDg/2)
             cellNumb[cellRow+1][cellCol] = cellNumb[cellRow][cellCol]
             cellNumb[cellRow][cellCol] = 0
         }
         
-        if(rightTurn){
+        if(rightTurn["x+"] == true || rightTurn["x-"] == true ||
+            rightTurn["y+"] == true || rightTurn["y-"] == true){
             turnDg+=1
         }
         
         // reset turn props
-        rightTurn = false
+        rightTurn = ["x+":false, "x-":false, "y+":false, "y-":false]
         dragFirstTick = true
         dragStartPoint = CGPoint(x: 0, y: 0)
         
